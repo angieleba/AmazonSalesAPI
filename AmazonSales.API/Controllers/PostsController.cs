@@ -55,6 +55,5 @@ namespace AmazonSales.Controllers
             List<Product> products = _context.UserProducts.Where(x => x.UserId == userId).Select(x => x.Product).ToList();
             return Ok(new { result = products });
         }
-
     }
 }
