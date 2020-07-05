@@ -1,5 +1,7 @@
 ﻿using AmazonSales.Data.Db;
 using AmazonSales.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,9 @@ using System.Threading.Tasks;
 
 namespace AmazonSales.Controllers
 {
-    [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
+    [EnableCors("CorsApi")]
+    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class PostsController : ControllerBase
     {
@@ -25,6 +29,11 @@ namespace AmazonSales.Controllers
             //TODO Implement query for logged in user or not 
             //Apply an algorithm 
             List<Product> products = _context.Products.ToList();
+            products.Add(new Product()
+            {
+                Id = 1,
+                Link = "hey"
+            });
             return Ok(new { result = products });
         }
 
