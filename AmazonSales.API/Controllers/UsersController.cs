@@ -31,7 +31,7 @@ namespace AmazonSales.Controllers
 
         [Microsoft.AspNetCore.Mvc.HttpGet]
         [Microsoft.AspNetCore.Mvc.Route("{id}")]
-        public IActionResult Get(int Id)
+        public IActionResult Get(string Id)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == Id);
             if (user == null)

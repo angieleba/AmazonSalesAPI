@@ -24,11 +24,10 @@ namespace AmazonSales.Data.Db.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: true),
-                    Username = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Surname = table.Column<string>(nullable: true),
                     RoleId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -46,10 +45,9 @@ namespace AmazonSales.Data.Db.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<string>(nullable: false),
                     Link = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -59,15 +57,15 @@ namespace AmazonSales.Data.Db.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserFollowings",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false),
-                    FollowedUserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    FollowedUserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,8 +88,8 @@ namespace AmazonSales.Data.Db.Migrations
                 name: "UserProducts",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    ProductId = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {

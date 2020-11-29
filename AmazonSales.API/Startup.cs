@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AmazonSales.API.Services;
+using AmazonSales.API.Services.User;
 using AmazonSales.Data.Db;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -29,7 +31,6 @@ namespace AmazonSales.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             string authority = $"https://{Configuration["AzureAdB2C:adb2c"]}/{Configuration["AzureAdB2C:Tenant"]}/{Configuration["AzureAdB2C:SignUpSignInPolicyId"]}/v2.0/";
             services.AddAuthentication(options =>
             {
@@ -37,7 +38,6 @@ namespace AmazonSales.API
             }).AddJwtBearer(jwtOptions =>
             {
                 jwtOptions.Authority = authority;
-
                 jwtOptions.Audience = Configuration["AzureAdB2C:ClientId"];
                 jwtOptions.Events = new JwtBearerEvents
                 {
@@ -47,11 +47,6 @@ namespace AmazonSales.API
                         c.Response.StatusCode = 500;
                         c.Response.ContentType = "text/plain";
                         c.Response.WriteAsync(c.Exception.ToString()).Wait();
-                        return Task.CompletedTask;
-                    },
-                    OnChallenge = c =>
-                    {
-                        c.HandleResponse();
                         return Task.CompletedTask;
                     }
                 };
@@ -67,9 +62,8 @@ namespace AmazonSales.API
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            //services.AddDbContext<SalesContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
             services.AddDbContext<SalesContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"], b => b.MigrationsAssembly("AmazonSales.Data.Db")));
-           
+            services.AddTransient<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,7 +80,6 @@ namespace AmazonSales.API
             app.UseCors("CorsApi");
             app.UseAuthentication();
             app.UseHttpsRedirection();
-
 
             app.UseMvc();
         }

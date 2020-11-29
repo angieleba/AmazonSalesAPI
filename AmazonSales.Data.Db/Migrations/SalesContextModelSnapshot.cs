@@ -20,13 +20,12 @@ namespace AmazonSales.Data.Db.Migrations
 
             modelBuilder.Entity("AmazonSales.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Link");
 
-                    b.Property<int>("UserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
@@ -50,17 +49,16 @@ namespace AmazonSales.Data.Db.Migrations
 
             modelBuilder.Entity("AmazonSales.Models.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Email");
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Name");
 
                     b.Property<int>("RoleId");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Surname");
 
                     b.HasKey("Id");
 
@@ -71,9 +69,9 @@ namespace AmazonSales.Data.Db.Migrations
 
             modelBuilder.Entity("AmazonSales.Models.UserFollowing", b =>
                 {
-                    b.Property<int>("UserId");
+                    b.Property<string>("UserId");
 
-                    b.Property<int>("FollowedUserId");
+                    b.Property<string>("FollowedUserId");
 
                     b.HasKey("UserId", "FollowedUserId");
 
@@ -84,9 +82,9 @@ namespace AmazonSales.Data.Db.Migrations
 
             modelBuilder.Entity("AmazonSales.Models.UserProducts", b =>
                 {
-                    b.Property<int>("UserId");
+                    b.Property<string>("UserId");
 
-                    b.Property<int>("ProductId");
+                    b.Property<string>("ProductId");
 
                     b.HasKey("UserId", "ProductId");
 
@@ -99,8 +97,7 @@ namespace AmazonSales.Data.Db.Migrations
                 {
                     b.HasOne("AmazonSales.Models.User", "User")
                         .WithMany("Products")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AmazonSales.Models.User", b =>
