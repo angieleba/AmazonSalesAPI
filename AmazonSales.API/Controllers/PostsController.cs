@@ -30,7 +30,13 @@ namespace AmazonSales.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var user = userService.GetCurrentUser(User);
+            User user = null;
+            var id = (User.Identity as ClaimsIdentity).Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
+            if (id != null)
+            {
+                user = userService.GetCurrentUser(id.Value);
+            }
+            
             if(user != null)
             {
                 //User is authenticated 

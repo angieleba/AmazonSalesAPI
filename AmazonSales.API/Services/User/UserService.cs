@@ -18,20 +18,26 @@ namespace AmazonSales.API.Services.User
             this.context = context;
         }   
         
-        public Models.User GetCurrentUser(ClaimsPrincipal user)
+        public Models.User GetCurrentUser(string id)
+        {
+            var dbUser = context.Users.FirstOrDefault(x => x.Id == id);
+            return dbUser;     
+        }
+
+        public void Register(ClaimsPrincipal user)
         {
             var claims = (user.Identity as ClaimsIdentity).Claims;
-            var id = claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
             var email = claims.Where(x => x.Type == "emails").FirstOrDefault();
-            var name = claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault();
+            var name = claims.Where(x => x.Type == ClaimTypes.GivenName).FirstOrDefault();
             var surname = claims.Where(x => x.Type == ClaimTypes.Surname).FirstOrDefault();
             var city = claims.Where(x => x.Type == "city").FirstOrDefault();
+            var id = claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
 
             if (id != null && email != null)
             {
                 var dbUser = context.Users.FirstOrDefault(x => x.Id == id.Value);
                 if (dbUser == null)
-                {                 
+                {
                     dbUser = new Models.User()
                     {
                         Id = id?.Value,
@@ -43,11 +49,7 @@ namespace AmazonSales.API.Services.User
                     context.Users.Add(dbUser);
                     context.SaveChanges();
                 }
-
-                return dbUser;
             }
-
-            return null;       
         }
     }
 }

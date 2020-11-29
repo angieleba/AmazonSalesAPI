@@ -1,4 +1,5 @@
-﻿using AmazonSales.Data.Db;
+﻿using AmazonSales.API.Services.User;
+using AmazonSales.Data.Db;
 using AmazonSales.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,10 +17,12 @@ namespace AmazonSales.Controllers
     public class UsersController : ControllerBase
     {
         private readonly SalesContext _context;
+        private readonly IUserService userService;
 
-        public UsersController(SalesContext context)
+        public UsersController(SalesContext context, IUserService userService)
         {
             _context = context;
+            this.userService = userService;
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet]
@@ -48,6 +51,15 @@ namespace AmazonSales.Controllers
             }
 
             return Ok(new { result = user });
+        }
+
+        [HttpGet]
+        [Route("register")]
+        public IActionResult Register()
+        {
+            this.userService.Register(User);
+
+            return Ok(new { result = "" });
         }
 
         [Microsoft.AspNetCore.Mvc.HttpPost]
