@@ -31,28 +31,24 @@ namespace AmazonSales.Controllers
         public IActionResult Get()
         {
             User user = null;
+            List<Product> products = new List<Product>();
             var id = (User.Identity as ClaimsIdentity).Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
             if (id != null)
             {
                 user = userService.GetCurrentUser(id.Value);
-            }
-            
-            if(user != null)
-            {
-                //User is authenticated 
-            } else
-            {
-                //not 
-            }
+                if(user == null) //User not yet saved in database
+                {
+                    user = userService.Register(User);
+                }
+            }     
 
-            //TODO Implement query for logged in user or not 
-            //Apply an algorithm 
-            List<Product> products = _context.Products.ToList();
-            products.Add(new Product()
+            //TODO: Implement query for logged in user or not 
+            //TODO: Apply an algorithm 
+            if(user != null) //check in case of not loggedin users
             {
-                Id = Guid.NewGuid().ToString(),
-                Link = "hey"
-            });
+                products = _context.Products.Where(x => x.UserId == user.Id).ToList();
+            } 
+                       
             return Ok(new { result = products });
         }
 
@@ -60,7 +56,7 @@ namespace AmazonSales.Controllers
         [Authorize]
         public IActionResult Post(Product product)
         {
-            //TODO Validate product URL first 
+            //TODO: Validate product URL first 
             _context.Products.Add(product);
             _context.SaveChanges();
 
@@ -72,8 +68,8 @@ namespace AmazonSales.Controllers
         [Route("/myPosts/{userId}")]
         public IActionResult GetPostedProducts(string userId)
         {
-            //TODO Implement query for logged in user or not 
-            //Apply an algorithm 
+            //TODO: Implement query for logged in user or not 
+            //TODO: Apply an algorithm 
             List<Product> products = _context.Products.Where(x => x.UserId == userId).ToList();
             return Ok(new { result = products });
         }

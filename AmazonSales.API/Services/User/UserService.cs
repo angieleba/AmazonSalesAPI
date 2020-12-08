@@ -1,6 +1,4 @@
-﻿
-
-using AmazonSales.API.Services.User;
+﻿using AmazonSales.API.Services.User;
 using AmazonSales.Data.Db;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,7 +22,7 @@ namespace AmazonSales.API.Services.User
             return dbUser;     
         }
 
-        public void Register(ClaimsPrincipal user)
+        public Models.User Register(ClaimsPrincipal user)
         {
             var claims = (user.Identity as ClaimsIdentity).Claims;
             var email = claims.Where(x => x.Type == "emails").FirstOrDefault();
@@ -50,6 +48,8 @@ namespace AmazonSales.API.Services.User
                     context.SaveChanges();
                 }
             }
+
+            return context.Users.FirstOrDefault(x => id != null && x.Id == id.Value);
         }
     }
 }
