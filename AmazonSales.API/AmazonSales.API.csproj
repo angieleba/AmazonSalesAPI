@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AmazonSales.Data.Db\AmazonSales.Data.Db.csproj" />
-    <ProjectReference Include="..\AmazonSales.Data.UI\AmazonSales.Data.UIModels.csproj" />
   </ItemGroup>
 
 </Project>
