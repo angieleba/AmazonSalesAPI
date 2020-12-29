@@ -1,4 +1,4 @@
-﻿using AmazonSales.API.Services;
+﻿using AmazonSales.API.Services.Products;
 using AmazonSales.API.Services.User;
 using AmazonSales.Data.Db;
 using AmazonSales.Models;
@@ -16,49 +16,58 @@ namespace AmazonSales.Controllers
     [EnableCors("CorsApi")]
     [Route("api/[controller]")]
     [ApiController]
-    public class PostsController : ControllerBase
+    public class ProductController : ControllerBase
     {
-        private readonly SalesContext _context;
-        private readonly IUserService userService;
 
-        public PostsController(SalesContext context, IUserService userService)
+        private readonly IUserService userService;
+        private readonly IProductService productService;
+        public ProductController(IUserService userService, IProductService productService)
         {
-            _context = context;
+            
             this.userService = userService;
+            this.productService = productService;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
             User user = null;
-            List<Product> products = new List<Product>();
-            var id = (User.Identity as ClaimsIdentity).Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
-            if (id != null)
+            IList<Product> products = new List<Product>();
+
+            user = userService.GetCurrentUser(this.User);
+            if (user == null) //User not yet saved in database
             {
-                user = userService.GetCurrentUser(id.Value);
-                if(user == null) //User not yet saved in database
-                {
-                    user = userService.Register(User);
-                }
-            }     
+                user = userService.Register(User);
+            }
 
             //TODO: Implement query for logged in user or not 
             //TODO: Apply an algorithm 
-            if(user != null) //check in case of not loggedin users
+            if (user != null) //check in case of not loggedin users
             {
-                products = _context.Products.Where(x => x.UserId == user.Id).ToList();
+                products = productService.GetPublishedProducts(user.Id);
             } 
                        
-            return Ok(new { result = products });
+            return Ok(products);
         }
 
         [HttpPost]
         [Authorize]
         public IActionResult Post(Product product)
         {
-            //TODO: Validate product URL first 
-            _context.Products.Add(product);
-            _context.SaveChanges();
+            //TODO: Validate product URL first
+            if(!string.IsNullOrEmpty(product.Link))
+            {
+                var user = userService.GetCurrentUser(this.User);
+                if(user != null)
+                {
+                    product.User = user;
+                    productService.Create(product);
+                } else
+                {
+                    //Error: this scenario should not happen. User must be logged in before calling a product creation
+                }
+                
+            }
 
             return Ok(new { result = product });
         }
@@ -70,7 +79,7 @@ namespace AmazonSales.Controllers
         {
             //TODO: Implement query for logged in user or not 
             //TODO: Apply an algorithm 
-            List<Product> products = _context.Products.Where(x => x.UserId == userId).ToList();
+            var products = productService.GetPublishedProducts(userId);
             return Ok(new { result = products });
         }
 
@@ -79,7 +88,7 @@ namespace AmazonSales.Controllers
         [Route("/bookmarkedPosts/{userId}")]
         public IActionResult GetBookmarkedProducts(string userId)
         {
-            List<Product> products = _context.UserProducts.Where(x => x.UserId == userId).Select(x => x.Product).ToList();
+            IList<Product> products = productService.GetBookmarkedProducts(userId);
             return Ok(new { result = products });
         }
     }

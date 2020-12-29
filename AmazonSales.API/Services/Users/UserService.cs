@@ -16,10 +16,16 @@ namespace AmazonSales.API.Services.User
             this.context = context;
         }   
         
-        public Models.User GetCurrentUser(string id)
+        public Models.User GetCurrentUser(ClaimsPrincipal User)
         {
-            var dbUser = context.Users.FirstOrDefault(x => x.Id == id);
-            return dbUser;     
+            var claim = (User.Identity as ClaimsIdentity).Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
+            if(claim != null)
+            {
+                var dbUser = context.Users.FirstOrDefault(x => x.Id == claim.Value);
+                return dbUser;
+            }
+
+            return null;
         }
 
         public Models.User Register(ClaimsPrincipal user)

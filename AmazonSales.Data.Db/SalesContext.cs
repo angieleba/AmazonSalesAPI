@@ -13,6 +13,7 @@ namespace AmazonSales.Data.Db
 
         public SalesContext(DbContextOptions<SalesContext> options) : base(options)
         {
+            this.ChangeTracker.LazyLoadingEnabled = false;
             this.options = options;
         }
 

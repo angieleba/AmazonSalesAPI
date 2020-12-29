@@ -8,7 +8,7 @@ namespace AmazonSales.API.Services.User
 {
     public interface IUserService
     {
-        Models.User GetCurrentUser(string id);
+        Models.User GetCurrentUser(ClaimsPrincipal User);
         Models.User Register(ClaimsPrincipal user);
 
     }
